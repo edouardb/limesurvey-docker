@@ -1,0 +1,28 @@
+version: '2'
+
+volumes:
+  dblimesurvey: {}
+  wwwlimesurvey: {}
+
+services:
+  dblimesurvey:
+    image: postgres:latest
+    volumes:
+      - dblimesurvey:/var/lib/postgresql/data
+      - ./entrypoints/init-limesurvey-db.sh:/docker-entrypoint-initdb.d/init-limesurvey-db.sh
+    restart: always
+    environment:
+      POSTGRES_USER: limesurvey
+      POSTGRES_PASSWORD: limesurvey
+      POSTGRES_DB: limesurvey
+
+  limesurvey:
+    build: ./images/limesurvey
+    volumes:
+      - wwwlimesurvey:/var/www
+    restart: always
+    ports:
+      - "6343:80"
+    depends_on:
+      - dblimesurvey
+
